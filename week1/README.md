@@ -1,0 +1,26 @@
+Topics:
+- Const
+    - const
+    - constexpr
+    - const_cast
+- Functions
+    - Lambda expression
+    - Inline functions and their implications on performance
+    - Function pointers vs std::fucntion for higher-order functions
+- Class
+    - Inheritance vs composition
+    - Access controls
+        - friend class, friend function
+        - nested classes for encapsulation
+    - OOP
+        - virtual funcs, dynamic dispatch
+        - pure vitual func
+        - object slicing, polymorphism pitfalls
+    - Const correctness in C++ Class
+        - cosnt member func
+        - mutable keyword for exception to const
+    - Advanced C++ Features
+        - Operator overloading
+        - Copy Constructor and assignemnt operator
+        - Move semantics and perfect forwarding
+        - Default functions within class
