@@ -32,3 +32,11 @@ The following features are planned to be supported by MyVec:
     size_t capacity：当前分配的数组容量。
 ## License
 This project is licensed under the [MIT License](LICENSE).
+
+
+## References
+
+### Allocator
+- [Why use allocators instead of `new`?](https://stackoverflow.com/questions/5628059/c-stl-allocator-vs-operator-new)
+- [`allocator_traits`: accessing various properties of the allocator class](https://en.cppreference.com/w/cpp/memory/allocator_traits)
+- [allocator interface](https://en.cppreference.com/w/cpp/memory/allocator)
