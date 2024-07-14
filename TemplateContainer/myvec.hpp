@@ -49,7 +49,7 @@ public:
   {
     m_data = m_allocator.allocate(m_capacity);
     for (size_type i = 0; i < count; ++i) {
-      construct_at(m_data + i, value);
+      std::construct_at(m_data + i, value);
     }
   }
 
@@ -66,7 +66,7 @@ public:
   {
     m_data = m_allocator.allocate(m_capacity);
     for (size_type i = 0; i < m_size; ++i) {
-      construct_at(m_data + i, other.m_data[i]);
+      std::construct_at(m_data + i, other.m_data[i]);
     }
   }
 
@@ -96,6 +96,55 @@ public:
     clear();
     m_allocator.deallocate(m_data, m_capacity);
   }
+
+  /**
+   * @brief Copy assignment operator. Replaces the contents witht a copy of the contents of `other`.
+   *
+   * @param other other container to copy the contents from.
+   */
+
+  MyVec& operator=(const MyVec& other)
+  {
+    if (this == &other) {
+      return *this;
+    }
+    if (m_capacity < other.m_size) {
+      clear();
+      m_allocator.deallocate(m_data, m_capacity);
+      m_capacity = other.m_size;
+      m_data = m_allocator.allocate(m_capacity);
+    }
+    m_size = other.m_size;
+    for (size_type i = 0; i < m_size; ++i) {
+      std::construct_at(m_data + i, other.m_data[i]);
+    }
+    return *this;
+  }
+
+  /**
+   * @brief Move assignment operator. Replaces the contents with the contents of `other` using move semantics.
+   *
+   * @param other other container to move the contents from.
+   */
+  MyVec& operator=(MyVec&& other)
+  {
+    if (this == &other) {
+      return *this;
+    }
+    clear();
+    m_allocator.deallocate(m_data, m_capacity);
+    m_allocator = other.m_allocator;
+    m_capacity = other.m_capacity;
+    m_size = other.m_size;
+    m_data = other.m_data;
+    other.m_capacity = 0;
+    other.m_size = 0;
+    other.m_data = nullptr;
+    return *this;
+  }
+
+
+
 
 
   /**
