@@ -1,5 +1,6 @@
 #include "myvec.hpp"
 #include <iostream>
+#include <algorithm>
 
 template <typename T, typename A>
 std::ostream& operator<<(std::ostream& os, const MyVec<T, A>& vec)
@@ -107,12 +108,58 @@ void test_resize()
   std::cout << vec_int;
 }
 
+void test_iterators()
+{
+  MyVec<int> vec_int;
+  vec_int.push_back(2);
+  vec_int.push_back(4);
+  vec_int.push_back(8);
+  vec_int.push_back(3);
+  vec_int.push_back(1);
+  vec_int.push_back(5);
+  vec_int.push_back(6);
+  vec_int.push_back(7);
+
+  std::cout << "Accessing vector via iterator:\n";
+  for (auto it = vec_int.begin(); it != vec_int.end(); ++it) {
+    std::cout << *it << " ";
+  }
+  std::cout << std::endl;
+
+  std::cout << "After sorting:\n";
+  std::sort(vec_int.begin(), vec_int.end());
+  std::cout << vec_int;
+}
+
+void test_insert()
+{
+  MyVec<int> vec_int;
+  vec_int.push_back(2);
+  vec_int.push_back(4);
+  vec_int.push_back(8);
+  vec_int.push_back(3);
+  vec_int.push_back(1);
+  vec_int.push_back(5);
+  vec_int.push_back(6);
+  vec_int.push_back(7);
+
+  std::cout << "Before insert:\n";
+  std::cout << vec_int;
+  vec_int.insert(vec_int.begin() + 2, 10);
+  vec_int.insert(vec_int.end(), 11);
+  vec_int.insert(vec_int.begin(), 12);
+  std::cout << "After insert:\n";
+  std::cout << vec_int;
+}
+
 int main()
 {
   test_reserve();
   test_copy();
   test_move();
   test_resize();
+  test_iterators();
+  test_insert();
 
   // vec_int.push_back(1);
   // vec_int.push_back(2);
