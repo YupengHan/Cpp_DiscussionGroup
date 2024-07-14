@@ -113,6 +113,26 @@ public:
   }
 
   /**
+   * @brief Replaces the content of the container with `count` copies of `value`.
+   *
+   * @param count the new size of the container
+   * @param value the value to initialize elements of the container with.
+   */
+  void assign(size_type count, const T& value)
+  {
+    clear();
+    if (count > m_capacity) {
+      m_allocator.deallocate(m_data, m_capacity);
+      m_capacity = count;
+      m_data = m_allocator.allocate(m_capacity);
+    }
+    for (size_type i = 0; i < count; ++i) {
+      std::construct_at(m_data + i, value);
+    }
+    m_size = count;
+  }
+
+  /**
    * @brief Copy assignment operator. Replaces the contents witht a copy of the contents of `other`.
    *
    * @param other other container to copy the contents from.
@@ -307,8 +327,33 @@ public:
     --m_size;
   }
 
+  /**
+   * @brief Resizes the container to contain `count` elements. Does nothing if the current size is equal to `count`.
+   * If `count` is greater than the current size, the new elements are initialized with `value`.
+   * If `count` is less than the current size, the container is reduced to its first `count` elements.
+   *
+   * @param count the new size of the container.
+   * @param value the value to initialize new elements with. If not given, the default constructor of `T` is used.
+   */
+  void resize(size_type count, const T& value = T())
+  {
+    if (count < m_size) {
+      for (size_type i = count; i < m_size; ++i) {
+        traits::destroy(m_allocator, m_data + i);
+      }
+      m_size = count;
+    } else if (count > m_size) {
+      if (count > m_capacity) {
+        reserve(count);
+      }
+      for (size_type i = m_size; i < count; ++i) {
+        std::construct_at(m_data + i, value);
+      }
+      m_size = count;
+    }
+  }
 
-  // void resize();
+
   // void insert();
 
 };

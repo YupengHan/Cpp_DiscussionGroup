@@ -94,11 +94,25 @@ void test_move()
 
 }
 
+void test_resize()
+{
+  MyVec<int> vec_int;
+  std::cout << "Before resize:\n";
+  std::cout << vec_int;
+  vec_int.resize(5, 10);
+  std::cout << "After resize up:\n";
+  std::cout << vec_int;
+  vec_int.resize(2);
+  std::cout << "After resize down:\n";
+  std::cout << vec_int;
+}
+
 int main()
 {
   test_reserve();
   test_copy();
   test_move();
+  test_resize();
 
   // vec_int.push_back(1);
   // vec_int.push_back(2);
