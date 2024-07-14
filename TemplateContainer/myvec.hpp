@@ -1,3 +1,16 @@
+/**
+ * @brief A simple implementation of a vector-like container.
+ *
+ * @details
+ * The following class is a simple implementation of a vector-like container.
+ * The order of the member function is the same as in the standard library for
+ * cross reference. In addition, we also reuse the same names for the method
+ * arguments to reduce ambiguity.
+ *
+ * You may refer to https://en.cppreference.com/w/cpp/container/vector for the
+ * method order and the standard interface of the `std::vector` class.
+ */
+
 #ifndef MYVEC_HPP
 #define MYVEC_HPP
 
@@ -18,6 +31,8 @@ private:
   T* m_data { nullptr };
 
 public:
+
+  // Member Functions
 
   /**
    * @brief Constructs a new MyVec object.
@@ -143,21 +158,7 @@ public:
     return *this;
   }
 
-  /**
-   * @brief Erases all elements from this container. After this call, size of this container should be zero.
-   *
-   * Note: this method keeps the container capacity unchanged.
-   */
-  void clear()
-  {
-    for(size_type i = 0; i < m_size; ++i) {
-      traits::destroy(m_allocator, m_data + i);
-    }
-    m_size = 0;
-  }
-
-
-  // Element access methods
+  // Element Access
 
   /**
    * @brief Returns a reference to the element at the specified position in this container.
@@ -209,20 +210,106 @@ public:
     return m_data[pos];
   }
 
+  // Capacity
+
+  /**
+   * @brief Returns true if this container is empty, false otherwise.
+   */
+  bool empty() const
+  {
+    return m_size == 0;
+  }
+
+  /**
+   * @brief Reserve space for at least `new_cap` elements.
+   *
+   * @details
+   * If `new_cap` is greater than the current capacity, new memory is allocated. Otherwise, the method does nothing.
+   * @param new_cap the new capacity to reserve.
+   */
+  void reserve(size_type new_cap)
+  {
+    if (new_cap <= m_capacity) {
+      return;
+    }
+    if (new_cap > max_size()) {
+      throw std::length_error("Requested capacity exceeds maximum size");
+    }
+    T* new_data = m_allocator.allocate(new_cap);
+    for (size_type i = 0; i < m_size; ++i) {
+      std::construct_at(new_data + i, std::move(m_data[i]));
+      traits::destroy(m_allocator, m_data + i);
+    }
+    m_allocator.deallocate(m_data, m_capacity);
+    m_capacity = new_cap;
+    m_data = new_data;
+  }
+
   /**
    * @brief Returns the number of elements in this container.
    */
-  size_t size() const
+  size_type size() const
   {
     return m_size;
   }
 
+  /**
+   * @brief Returns the maximum theoretically possible allocation size for the container.
+   *
+   * @return size_type the maximum size of the container.
+   */
+  size_type max_size() const
+  {
+    return traits::max_size(m_allocator);
+  }
+
+  size_type capacity() const
+  {
+    return m_capacity;
+  }
+
+  // Modifiers
+
+  /**
+   * @brief Erases all elements from this container. After this call, size of this container should be zero.
+   *
+   * Note: this method keeps the container capacity unchanged.
+   */
+  void clear()
+  {
+    for(size_type i = 0; i < m_size; ++i) {
+      traits::destroy(m_allocator, m_data + i);
+    }
+    m_size = 0;
+  }
+
+  /**
+   * @brief Appends the given element `value` to the end of this container.
+   *
+   * @param value the value to append to this container.
+   */
+  void push_back(const T& value)
+  {
+    if (m_size == m_capacity) {
+      reserve(m_capacity == 0 ? 1 : m_capacity * 2);
+    }
+    m_data[m_size] = value;
+    ++m_size;
+  }
+
+  /**
+   * @brief Removes the last element of this container.
+   * Calling this method on an empty container is undefined behavior.
+   */
+  void pop_back()
+  {
+    m_allocator.destroy(m_data + m_size - 1);
+    --m_size;
+  }
+
+
   // void resize();
-  // void push_back();
-  // void pop_back();
   // void insert();
-  // bool empty() const;
-  // size_t size() const;
 
 };
 
