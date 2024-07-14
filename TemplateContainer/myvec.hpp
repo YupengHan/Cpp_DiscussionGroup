@@ -1,9 +1,9 @@
 #ifndef MYVEC_HPP
 #define MYVEC_HPP
 
-#include <vector> // For debugging usage
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 
 template <typename T, typename Allocator = std::allocator<T>>
 class MyVec
@@ -49,7 +49,7 @@ public:
   {
     m_data = m_allocator.allocate(m_capacity);
     for (size_type i = 0; i < count; ++i) {
-      construct_at(m_data + i, value);
+      std::construct_at(m_data + i, value);
     }
   }
 
@@ -66,7 +66,7 @@ public:
   {
     m_data = m_allocator.allocate(m_capacity);
     for (size_type i = 0; i < m_size; ++i) {
-      construct_at(m_data + i, other.m_data[i]);
+      std::construct_at(m_data + i, other.m_data[i]);
     }
   }
 
@@ -97,6 +97,51 @@ public:
     m_allocator.deallocate(m_data, m_capacity);
   }
 
+  /**
+   * @brief Copy assignment operator. Replaces the contents witht a copy of the contents of `other`.
+   *
+   * @param other other container to copy the contents from.
+   */
+
+  MyVec& operator=(const MyVec& other)
+  {
+    if (this == &other) {
+      return *this;
+    }
+    if (m_capacity < other.m_size) {
+      clear();
+      m_allocator.deallocate(m_data, m_capacity);
+      m_capacity = other.m_size;
+      m_data = m_allocator.allocate(m_capacity);
+    }
+    m_size = other.m_size;
+    for (size_type i = 0; i < m_size; ++i) {
+      std::construct_at(m_data + i, other.m_data[i]);
+    }
+    return *this;
+  }
+
+  /**
+   * @brief Move assignment operator. Replaces the contents with the contents of `other` using move semantics.
+   *
+   * @param other other container to move the contents from.
+   */
+  MyVec& operator=(MyVec&& other)
+  {
+    if (this == &other) {
+      return *this;
+    }
+    clear();
+    m_allocator.deallocate(m_data, m_capacity);
+    m_allocator = other.m_allocator;
+    m_capacity = other.m_capacity;
+    m_size = other.m_size;
+    m_data = other.m_data;
+    other.m_capacity = 0;
+    other.m_size = 0;
+    other.m_data = nullptr;
+    return *this;
+  }
 
   /**
    * @brief Erases all elements from this container. After this call, size of this container should be zero.
@@ -111,6 +156,67 @@ public:
     m_size = 0;
   }
 
+
+  // Element access methods
+
+  /**
+   * @brief Returns a reference to the element at the specified position in this container.
+   *
+   * @param pos position of the element to return.
+   * @return T& reference to the requested element.
+   */
+  T& operator[](size_type pos)
+  {
+    return m_data[pos];
+  }
+
+  /**
+   * @brief Returns a const reference to the element at the specified position in this container.
+   *
+   * @param pos position of the element to return.
+   * @return const T& reference to the requested element.
+   */
+  const T& operator[](size_type pos) const
+  {
+    return m_data[pos];
+  }
+
+  /**
+   * @brief Returns a reference to the element at specified location `pos`, with bounds checking.
+   *
+   * @param pos position of the element to return.
+   * @return T& reference to the requested element.
+   */
+  T& at(size_type pos)
+  {
+    if (pos >= m_size) {
+      throw std::out_of_range("Index out of range");
+    }
+    return m_data[pos];
+  }
+
+  /**
+   * @brief Returns a const reference to the element at specified location `pos`, with bounds checking.
+   *
+   * @param pos position of the element to return.
+   * @return const T& reference to the requested element.
+   */
+  const T& at(size_type pos) const
+  {
+    if (pos >= m_size) {
+      throw std::out_of_range("Index out of range");
+    }
+    return m_data[pos];
+  }
+
+  /**
+   * @brief Returns the number of elements in this container.
+   */
+  size_t size() const
+  {
+    return m_size;
+  }
+
   // void resize();
   // void push_back();
   // void pop_back();
@@ -118,9 +224,6 @@ public:
   // bool empty() const;
   // size_t size() const;
 
-  // operator
-  // T &operator[](size_t index) const;
-  // T &at(size_t index) const;
 };
 
 #endif // MYVEC_HPP
