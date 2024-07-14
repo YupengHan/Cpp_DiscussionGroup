@@ -104,6 +104,8 @@ public:
     other.m_data = nullptr;
   }
 
+  // TODO: vector( std::initializer_list<T> init, const Allocator& alloc = Allocator() );
+
   /**
    * @brief Destructor for the MyVec class.
    *
@@ -404,8 +406,8 @@ public:
     }
   }
 
+  // TODO: void swap(MyVec& other);
 
-  // void insert();
 
 private:
   allocator_type m_allocator { allocator_type() };
@@ -414,7 +416,8 @@ private:
   T* m_data { nullptr };
 };
 
+// Non-member functions
+// TODO: bool operator==(const MyVec<T, Allocator>& lhs, const MyVec<T, Allocator>& rhs);
+// TODO: bool operator<=>(const MyVec<T, Allocator>& lhs, const MyVec<T, Allocator>& rhs);
+
 #endif // MYVEC_HPP
-// template class MyVec<float>;
-// template class MyVec<double>;
-// template class MyVec<std::string>;
